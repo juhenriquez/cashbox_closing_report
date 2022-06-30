@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+     <record id="cashbox_cashier_sequence" model="ir.sequence">
+            <field name="name">Cashier sequence</field>
+            <field name="code">cashbox.report</field>
+            <field name="prefix">CASH/%(year)s/</field>
+            <field name="padding">6</field>
+            <field name="number_next">1</field>
+            <field name="number_increment">1</field>
+        </record>
+</odoo>

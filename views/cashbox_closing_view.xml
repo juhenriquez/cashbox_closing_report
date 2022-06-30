@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record model="ir.ui.view" id="view_cashbox_cashier_tree">
+        <field name="name">cashbox.closing.tree</field>
+        <field name="model">cashbox.closing</field>
+        <field name="arch" type="xml">
+            <tree decoration-info="state == 'draft'"
+                  decoration-warning="state == 'denied'"
+                  decoration-success="state in ['confirmed', 'accepted']"
+                  decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="user_id"/>
+                <field name="date"/>
+                <field name="journal_id"/>
+                <field name="company_id"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="view_cashbox_cashier_form">
+        <field name="name">cashbox.closing.form</field>
+        <field name="model">cashbox.closing</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button string='Confirmar' name="action_confirmed" type="object" class="oe_highlight" states="draft"/>
+                    <button string='Generar reporte' name="check_report" type="object" class="oe_highlight" states="confirmed,accepted"/>
+                    <button string='Aceptar' name="action_accepted" type="object" class="oe_highlight" states="confirmed"/>
+                    <button string='Rechazar' name="action_denied" type="object" class="oe_highlight" states="confirmed"/>
+                    <button string='Convertir en borrador' name="action_to_draft" type="object" class="oe_highlight" states="accepted,denied,cancel"/>
+                    <button string='Cancelar' name="action_cancel" type="object" class="oe_highlight" states="accepted"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,accepted,denied,cancel" statusbar_colors="{'draft':'blue', 'confirmed':'gray', 'accepted':'green', 'denied':'red', 'cancel':'black'}"/>
+                </header>
+                <sheet>
+                    <div class="oe_title oe_inline">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group col="2">
+                            <field name="user_id"/>
+                            <field name="date"/>
+                            <field name="journal_id"/>
+                            <field name="journal_bank_ids" widget="many2many_tags"/>
+                            <field name="company_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Comentarios">
+                            <field name="note" nolabel="1" placeholder="Observaciones ..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_cashbox_closing" model="ir.actions.act_window">
+        <field name="name">Cuadre de caja</field>
+        <field name="res_model">cashbox.closing</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_cashbox_cashier_tree"/>
+    </record>
+
+    <menuitem id="menu_cashbox_closing"
+        name="Cuadre de Caja"
+        parent="account.menu_finance_reports"
+        sequence="23"
+    />
+    
+    <menuitem id="cashbox_cashier_menu"
+              name="Cuadres"
+              parent="menu_cashbox_closing"
+              action="action_cashbox_closing"
+              sequence="1"/>
+
+</odoo>
