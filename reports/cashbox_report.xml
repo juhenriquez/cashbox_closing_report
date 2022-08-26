@@ -10,7 +10,10 @@
                     <t t-set="index" t-value="True" />
                     <t t-set="cash_invoices" t-value="data['cash_invoices']"/>
                     <t t-set="credit_invoices" t-value="data['credit_invoices']"/>
+                    <t t-set="cash_invoice_totals" t-value="data['cash_invoice_totals']"/>
+                    <t t-set="credit_invoices_totals" t-value="data['credit_invoices_totals']"/>
                     <t t-set="payments" t-value="data['payments']"/>
+                    <t t-set="payment_totals" t-value="data['payment_totals']"/>
                     <t t-set="shop_subtotal" t-value="0.0"/>
                     <t t-set="style" t-value="'page-break-before: avoid;'" />
                     <div class="page">
@@ -58,60 +61,40 @@
                                          </tr>
                                      </thead>
                                      <tbody style="font-size:10px;">
-                                        <t t-foreach="cash_invoices" t-as="row">
+                                         <t t-set="total_by_currency" t-value="{}"/>
+                                         <t t-foreach="cash_invoices" t-as="row">
                                             <t t-set="total_discount" t-value="total_discount + row['discount_amount']"/>
                                             <t t-set="total_cash" t-value="total_cash + row['cash']"/>
                                             <t t-set="total_credit" t-value="total_credit + row['credit_card']"/>
                                             <t t-set="total_check" t-value="total_check + row['check']"/>
                                             <t t-set="total_credit_note" t-value="total_credit_note + row['credit_note']"/>
                                             <t t-set="total_amount" t-value="total_amount + row['total']"/>
+                                            <t t-set="currency" t-value="env['res.currency'].browse(row['currency_id'])"/>
                                              <tr>
                                                  <td><span t-esc="row['date']"/></td>
                                                  <td><span t-esc="row['number']"/></td>
                                                  <td><span t-esc="row['partner']"/></td>
                                                  <td><span t-esc="row['salesman']"/></td>
-                                                 <td><span t-esc="row['discount_amount']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
-                                                 <td><span t-esc="row['discount_percent']"/></td>
-                                                 <td><span t-esc="row['cash']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
-                                                 <td><span t-esc="row['credit_card']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
-                                                 <td><span t-esc="row['check']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
-                                                 <td><span t-esc="row['credit_note']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
-                                                 <td><span t-esc="row['total']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
+                                                 <td class="text-right"><span t-esc="row['discount_amount']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                 <td class="text-right"><span t-esc="row['discount_percent']"/></td>
+                                                 <td class="text-right"><span t-esc="row['cash']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                 <td class="text-right"><span t-esc="row['credit_card']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                 <td class="text-right"><span t-esc="row['check']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                 <td class="text-right"><span t-esc="row['credit_note']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
+                                                 <td class="text-right"><span t-esc="row['total']" t-options="{'widget': 'monetary', 'display_currency': currency}"/></td>
                                              </tr>
                                          </t>
-                                         <tr>
-                                            <td colspan="4" class="text-left"><strong>Total facturado</strong></td>
-                                             <td>
-                                                 <strong>
-                                                    <span t-esc="total_discount" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
-                                             <td/>
-                                             <td>
-                                                 <strong>
-                                                    <span t-esc="total_cash" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
-                                             <td>
-                                                 <strong>
-                                                    <span t-esc="total_credit" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
-                                             <td>
-                                                 <strong>
-                                                    <span t-esc="total_check" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
-                                             <td>
-                                                 <strong>
-                                                    <span t-esc="total_credit_note" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
-                                             <td>
-                                                 <strong>
-                                                    <span t-esc="total_amount" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
+
+                                         <tr t-foreach="cash_invoice_totals" t-as="row">
+                                             <t t-set="curr" t-value="env['res.currency'].browse(row_value['currency_id'])"/>
+                                            <td colspan="4" class="text-left"><strong>Total facturado en <span t-esc="row"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="row_value['discount_amount']" t-options="{'widget': 'monetary', 'display_currency': curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="row_value['discount_percent']" t-options="{'widget': 'monetary', 'display_currency': curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="row_value['cash']" t-options="{'widget': 'monetary', 'display_currency': curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="row_value['credit_card']" t-options="{'widget': 'monetary', 'display_currency': curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="row_value['check']" t-options="{'widget': 'monetary', 'display_currency': curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="row_value['credit_note']" t-options="{'widget': 'monetary', 'display_currency': curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="row_value['total']" t-options="{'widget': 'monetary', 'display_currency': curr}"/></strong></td>
                                          </tr>
                                      </tbody>
                                  </table>
@@ -142,32 +125,23 @@
                                             <t t-set="total_cash" t-value="total_cash + payment['cash']"/>
                                             <t t-set="total_check" t-value="total_check + payment['check']"/>
                                             <t t-set="total_amount" t-value="total_amount + payment['total']"/>
+                                            <t t-set="payment_currency" t-value="env['res.currency'].browse(payment['currency_id'])"/>
                                              <tr>
                                                  <td><span t-esc="payment['date']"/></td>
                                                  <td><span t-esc="payment['name']"/></td>
                                                  <td><span t-esc="payment['partner']"/></td>
-                                                 <td class="text-right"><span t-esc="payment['cash']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
-                                                 <td class="text-right"><span t-esc="payment['check']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
-                                                 <td class="text-right"><span t-esc="payment['total']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
+                                                 <td class="text-right"><span t-esc="payment['cash']" t-options="{'widget': 'monetary', 'display_currency': payment_currency}"/></td>
+                                                 <td class="text-right"><span t-esc="payment['check']" t-options="{'widget': 'monetary', 'display_currency': payment_currency}"/></td>
+                                                 <td class="text-right"><span t-esc="payment['total']" t-options="{'widget': 'monetary', 'display_currency': payment_currency}"/></td>
                                              </tr>
                                         </t>
-                                        <tr>
-                                            <td colspan="3" class="text-left"><strong>TOTAL COBROS</strong></td>
-                                             <td class="text-right">
-                                                 <strong>
-                                                    <span t-esc="total_cash" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
-                                             <td class="text-right">
-                                                 <strong>
-                                                    <span t-esc="total_check" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
-                                             <td class="text-right">
-                                                 <strong>
-                                                    <span t-esc="total_amount" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
+
+                                        <tr t-foreach="payment_totals" t-as="item">
+                                             <t t-set="payment_curr" t-value="env['res.currency'].browse(item_value['currency_id'])"/>
+                                             <td colspan="3" class="text-left"><strong>TOTAL DE COBRO EN  <span t-esc="item"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="item_value['cash']" t-options="{'widget': 'monetary', 'display_currency': payment_curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="item_value['check']" t-options="{'widget': 'monetary', 'display_currency': payment_curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="item_value['total']" t-options="{'widget': 'monetary', 'display_currency': payment_curr}"/></strong></td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -194,23 +168,21 @@
                                          </tr>
                                      </thead>
                                      <tbody style="font-size:10px;">
-                                        <t t-foreach="credit_invoices" t-as="row">
+                                         <t t-foreach="credit_invoices" t-as="row">
                                             <t t-set="total_amount" t-value="total_amount + row['amount']"/>
+                                            <t t-set="currency_id" t-value="env['res.currency'].browse(row['currency_id'])"/>
                                              <tr>
                                                  <td><span t-esc="row['date']"/></td>
                                                  <td><span t-esc="row['number']"/></td>
                                                  <td><span t-esc="row['partner']"/></td>
                                                  <td><span t-esc="row['salesman']"/></td>
-                                                 <td class="text-right"><span t-esc="row['amount']" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/></td>
+                                                 <td class="text-right"><span t-esc="row['amount']" t-options="{'widget': 'monetary', 'display_currency': currency_id}"/></td>
                                              </tr>
                                          </t>
-                                         <tr>
-                                            <td colspan="4" class="text-left"><strong>TOTAL</strong></td>
-                                             <td class="text-right">
-                                                 <strong>
-                                                    <span t-esc="total_amount" t-options="{'widget': 'monetary', 'display_currency': res_company.currency_id}"/>
-                                                </strong>
-                                             </td>
+                                         <tr t-foreach="credit_invoices_totals" t-as="row">
+                                             <t t-set="credit_curr" t-value="env['res.currency'].browse(row_value['currency_id'])"/>
+                                            <td colspan="4" class="text-left"><strong>TOTAL EN  <span t-esc="row"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="row_value['total_amount']" t-options="{'widget': 'monetary', 'display_currency': credit_curr}"/></strong></td>
                                          </tr>
                                      </tbody>
                                  </table>
@@ -258,7 +230,6 @@
         <field name="name">paperformat.cashbox.report</field>
         <field name="default" eval="True"/>
         <field name="format">A4</field>
-        <field name="page_width">0</field>
         <field name="page_width">0</field>
         <field name="orientation">Portrait</field>
         <field name="margin_top">30</field>

@@ -1,7 +1,4 @@
-from odoo import api, fields, models
-import logging
-
-_logger = logging.getLogger(__name__)
+from odoo import api, models
 
 
 class CashboxReportCashier(models.AbstractModel):

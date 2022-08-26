@@ -1,7 +1,6 @@
-# -*- coding: utf-8 -*-
 {
     'name': 'Reporte Cierre de Ventas',
-    'version': '13.0',
+    'version': '13.0.1.0.2',
     'category': '',
     'summary': "Reporte Cierre de Ventas",
     'author': 'Yasmany Castillo <yasmany003@gmail.com>',
@@ -14,6 +13,3 @@
         'views/cashbox_closing_view.xml',
     ],
 }
-
-
-
