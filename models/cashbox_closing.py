@@ -101,11 +101,12 @@ class CashboxClosingReport(models.Model):
         for payment in payments:
             payment_date = date.strftime(payment.payment_date, '%d/%m/%Y')
             payment_form = payment.journal_id.l10n_do_payment_form
-            cash_amount = 0.0
-            check_amount = 0.0
+            cash_amount, card_amount, check_amount = 0.0, 0.0, 0.0
 
-            if payment_form in ['cash', 'card']:
+            if payment_form == 'cash':
                 cash_amount = payment.amount
+            elif payment_form == 'card':
+                card_amount = payment.amount
             elif payment_form == 'bank':
                 check_amount = payment.amount
 
@@ -115,6 +116,7 @@ class CashboxClosingReport(models.Model):
                 'currency_id': payment.currency_id.ids,
                 'partner': payment.partner_id.name,
                 'cash': cash_amount,
+                'card': card_amount,
                 'check': check_amount,
                 'total': payment.amount,
             })
@@ -122,11 +124,13 @@ class CashboxClosingReport(models.Model):
                 totals[payment.currency_id.name] = {
                     'currency_id': payment.currency_id.ids,
                     'cash': cash_amount,
+                    'card': card_amount,
                     'check': check_amount,
                     'total': payment.amount,
                 }
             else:
                 totals[payment.currency_id.name]['cash'] += cash_amount
+                totals[payment.currency_id.name]['card'] += card_amount
                 totals[payment.currency_id.name]['check'] += check_amount
                 totals[payment.currency_id.name]['total'] += payment.amount
 

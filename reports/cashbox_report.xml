@@ -116,21 +116,20 @@
                                             <th><b>RECIBO NO.</b></th>
                                             <th><b>CLIENTE</b></th>
                                             <th class="text-right"><b>EFECTIVO</b></th>
+                                            <th class="text-right"><b>TARJETA</b></th>
                                             <th class="text-right"><b>CHEQUE / TRANSFERENCIA</b></th>
                                             <th class="text-right"><b>MONTO</b></th>
                                         </tr>
                                     </thead>
                                     <tbody style="font-size:10px;">
                                         <t t-foreach="payments" t-as="payment">
-                                            <t t-set="total_cash" t-value="total_cash + payment['cash']"/>
-                                            <t t-set="total_check" t-value="total_check + payment['check']"/>
-                                            <t t-set="total_amount" t-value="total_amount + payment['total']"/>
                                             <t t-set="payment_currency" t-value="env['res.currency'].browse(payment['currency_id'])"/>
                                              <tr>
                                                  <td><span t-esc="payment['date']"/></td>
                                                  <td><span t-esc="payment['name']"/></td>
                                                  <td><span t-esc="payment['partner']"/></td>
                                                  <td class="text-right"><span t-esc="payment['cash']" t-options="{'widget': 'monetary', 'display_currency': payment_currency}"/></td>
+                                                 <td class="text-right"><span t-esc="payment['card']" t-options="{'widget': 'monetary', 'display_currency': payment_currency}"/></td>
                                                  <td class="text-right"><span t-esc="payment['check']" t-options="{'widget': 'monetary', 'display_currency': payment_currency}"/></td>
                                                  <td class="text-right"><span t-esc="payment['total']" t-options="{'widget': 'monetary', 'display_currency': payment_currency}"/></td>
                                              </tr>
@@ -140,6 +139,7 @@
                                              <t t-set="payment_curr" t-value="env['res.currency'].browse(item_value['currency_id'])"/>
                                              <td colspan="3" class="text-left"><strong>TOTAL DE COBRO EN  <span t-esc="item"/></strong></td>
                                              <td class="text-right"><strong><span t-esc="item_value['cash']" t-options="{'widget': 'monetary', 'display_currency': payment_curr}"/></strong></td>
+                                             <td class="text-right"><strong><span t-esc="item_value['card']" t-options="{'widget': 'monetary', 'display_currency': payment_curr}"/></strong></td>
                                              <td class="text-right"><strong><span t-esc="item_value['check']" t-options="{'widget': 'monetary', 'display_currency': payment_curr}"/></strong></td>
                                              <td class="text-right"><strong><span t-esc="item_value['total']" t-options="{'widget': 'monetary', 'display_currency': payment_curr}"/></strong></td>
                                         </tr>
@@ -151,12 +151,6 @@
                         <section>
                             <h5>FACTURAS A CRÉDITO</h5>
                             <div class="row">
-                                <t t-set="total_discount" t-value="0.0"/>
-                                <t t-set="total_cash" t-value="0.0"/>
-                                <t t-set="total_credit" t-value="0.0"/>
-                                <t t-set="total_check" t-value="0.0"/>
-                                <t t-set="total_credit_note" t-value="0.0"/>
-                                <t t-set="total_amount" t-value="0.0"/>
                                  <table class="table table-condensed table-bordered">
                                      <thead>
                                          <tr style="font-size:12px;">
